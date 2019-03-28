@@ -9,7 +9,7 @@ import Notifications from './Notifications';
 
 
 //var host_url = 'http://localhost:8000'
-var host_url = 'https://copyfriendzonebackend.herokuapp.com/';
+var host_url = 'https://copyfriendzonebackend.herokuapp.com';
 var login_url = host_url+'/api/auth/login';
 var logout_url = host_url+'/api/auth/logout';
 var register_url = host_url+'/api/auth/register';
