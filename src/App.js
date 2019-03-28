@@ -8,8 +8,8 @@ import Profile from './Profile';
 import Notifications from './Notifications';
 
 
-var host_url = 'http://localhost:8000'
-//host_url = 'https://project-cmput404.herokuapp.com';
+//var host_url = 'http://localhost:8000'
+var host_url = 'https://project-cmput404.herokuapp.com';
 var login_url = host_url+'/api/auth/login';
 var logout_url = host_url+'/api/auth/logout';
 var register_url = host_url+'/api/auth/register';
