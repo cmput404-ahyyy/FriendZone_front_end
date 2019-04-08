@@ -65,7 +65,7 @@ class Notifications extends Component{
           };
         console.log("here is the user_data")
         console.log(user_data)
-        if(follower.hostName !=this.state.author.hostName){
+        if(host !=this.state.author.hostName){
             console.log("here is the stuff in line 67")
             console.log(host)
             console.log(this.state.author.hostName)
@@ -73,6 +73,7 @@ class Notifications extends Component{
 
             user_data.remote=true;
             user_data.host=host;
+            user_data.to_author=this.state.author;
             console.log(user_data);
         }
 
@@ -114,6 +115,7 @@ class Notifications extends Component{
         if(follower.hostName !=this.state.author.hostName){
             user_data.remote=true;
             user_data.host=host;
+            user_data.to_author=this.state.author;
         }
 
         fetch(url_for_friendRequest, {
