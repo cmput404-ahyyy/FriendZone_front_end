@@ -63,7 +63,13 @@ class Notifications extends Component{
             "remote": false,
             "host": "",
           };
+        console.log("here is the user_data")
+        console.log(user_data)
         if(follower.hostName !=this.state.author.hostName){
+            console.log("here is the stuff in line 67")
+            console.log(follower.hostName)
+            console.log(this.state.author.hostName)
+
             user_data.remote=true;
             user_data.host=host;
         }
