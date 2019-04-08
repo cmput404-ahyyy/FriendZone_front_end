@@ -229,7 +229,7 @@ class Homepage extends Component{
         .then(response => {
         console.log(response);
         if (response.hasOwnProperty("posts")){
-            // console.log(response);
+            console.log(response);
             this.setState({posts: response.posts});
             this.state.posts.sort(function(b, a){return (new Date(a.publicationDate) - new Date(b.publicationDate))});
             this.setState({})
