@@ -209,18 +209,16 @@ class Homepage extends Component{
     }
 
     do_all() { 
-        if (this.githubURL != 'null') {
-            this.getGithubEvent()
-        }
         this.get_posts()
-        this.get_foreignposts()
+        this.getGithubEvent()
+        // this.get_foreignposts()
         
     }
 
-    get_posts() {
+    async get_posts() {
         // console.log("in get posts " + this.props.author_state.token); 
     
-        fetch(getposts_url, {
+        await fetch(getposts_url, {
             method: 'GET',
             headers:{
               'Content-Type': 'application/json',
@@ -233,7 +231,8 @@ class Homepage extends Component{
         if (response.hasOwnProperty("posts")){
             // console.log(response);
             this.setState({posts: response.posts});
-            // this.state.posts = 
+            this.state.posts.sort(function(b, a){return (new Date(a.publicationDate) - new Date(b.publicationDate))});
+            this.setState({})
         }
         else{
             this.setState({posts: []})
@@ -241,6 +240,8 @@ class Homepage extends Component{
     
         })
         .catch(error => console.error('Error:', error));
+
+        var a = 1;
     }
 
 
@@ -300,7 +301,9 @@ get_foreignposts() {
         })
         .catch(error => console.error('Error:', error));
         
-
+        if (githubUsername === ""){
+            alert("Your Github url has not beet set up!");
+        }
         fetch('https://api.github.com/users/'+githubUsername+'/events', {
         method: 'GET', // or 'PUT'
         headers:{
@@ -355,6 +358,8 @@ get_foreignposts() {
         // console.log("this is the prop")
         // console.log(this.props.author_state.token)
         // console.log(this.state.posts)
+        this.state.posts.sort(function(b, a){return (new Date(a.publicationDate) - new Date(b.publicationDate))});
+
         if(this.state.posts.length > 0){
         var posts= this.state.posts.map(post =>{
             return(
@@ -370,7 +375,6 @@ get_foreignposts() {
             // document.body.style = 'background: linear-gradient(#bdc3c7, #2c3e50);'
             var posts="NO POSTS";
         }
-        this.state.posts.sort(function(a, b){return (new Date(b.publicationDate) - new Date(a.publicationDate))});
         return(
             <center>
                 <Button id='post' size='sm' color="primary" onClick={this.toggle} style={{ marginBottom: '1rem', zIndex:2 }}>Make Post!</Button>
@@ -431,7 +435,7 @@ get_foreignposts() {
                     <div classname = 'buttons'>
                         <Button id='get_posts' size='sm' color="primary" onClick={this.get_posts} style={{ marginBottom: '1rem' }}>Get Posts</Button>
                         <Button id='get_stream' size='sm' color="primary" onClick={this.get_events} style={{ marginBottom: '1rem' }}>Get Git Events</Button>
-                        <Button id='get_stream' size='sm' color="primary" onClick={this.get_foreignposts} style={{ marginBottom: '1rem' }}>Get Foreign Posts</Button> 
+                        {/* <Button id='get_stream' size='sm' color="primary" onClick={this.get_foreignposts} style={{ marginBottom: '1rem' }}>Get Foreign Posts</Button>  */}
                     </div>
                     
                     
