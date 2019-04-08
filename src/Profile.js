@@ -64,7 +64,8 @@ class Profile extends Component{
         }
         else{
             this.setState({success:false,message:response.message});
-            alert(response.message);
+            // console.log(response);
+            alert(JSON.stringify(response.message));
         }
         this.getProfile();
         })
