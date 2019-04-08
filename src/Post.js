@@ -10,7 +10,12 @@ function CommentList(props){
     const commentItems = comments.map(
         (comment) =>
         <li className="comment" >
-            <p>{"Author: "+comment.author}</p>
+            {comment.author.displayName == undefined &&
+                <p>{"Author: "+comment.author}</p>
+            }
+            {comment.author.displayName != undefined &&
+                <p>{"Author: "+comment.author.displayName}</p>
+            }
             <p>{"Comment: "+ comment.comment}</p>
         </li>
     );
@@ -33,13 +38,13 @@ class Post extends Component{
                 "origin": "",
                 "contentType": "",
                 "author": {
-                  "url": "",
-                  "author_id": "",
-                  "firstName": null,
-                  "lastName": "",
-                  "username": "",
-                  "hostName": "",
-                  "githubUrl": ""
+                    "url": "",
+                    "author_id": "",
+                    "firstName": null,
+                    "lastName": "",
+                    "username": "",
+                    "hostName": "",
+                    "githubUrl": ""
                 },
                 "content": "content",
                 "images":[{'img': ''}],
@@ -131,6 +136,12 @@ class Post extends Component{
                 );
                 var content = (<div></div>);
             }
+            if (this.state.data.author.hasOwnProperty('displayName')){
+                this.state.data.author.username = this.state.data.author.displayName;
+            }
+            if (this.state.data.hasOwnProperty('published')){
+                this.state.data.publicationDate = this.state.data.published
+            }
             return (
                 <Card>
                     
@@ -140,9 +151,10 @@ class Post extends Component{
                     <CardBody>
                         <CardText>{"Author: "+this.state.data.author.username}</CardText> 
                         <hr></hr>
-                        <CardText>{this.state.data.origin}</CardText>
+                        <CardText>{"Origin: "+this.state.data.origin}</CardText>
                         <hr></hr>
                         {content}
+                        <hr></hr>
                         <CardText>{(new Date(this.state.data.publicationDate)).toDateString()}</CardText>
                         <CardText>{(new Date(this.state.data.publicationDate)).toTimeString()}</CardText>
                         <CommentList comments = {this.state.comments} />
