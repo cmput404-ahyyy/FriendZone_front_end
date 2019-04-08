@@ -157,6 +157,7 @@ class Post extends Component{
                         <hr></hr>
                         <CardText>{(new Date(this.state.data.publicationDate)).toDateString()}</CardText>
                         <CardText>{(new Date(this.state.data.publicationDate)).toTimeString()}</CardText>
+                        <CardHeader tag="h4">Comment: </CardHeader>
                         <CommentList comments = {this.state.comments} />
                         <InputGroup>
                             <Input type="textarea" name="text" id={this.state.data.postid} placeholder="Leave a comment!" />
