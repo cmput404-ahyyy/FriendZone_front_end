@@ -231,18 +231,8 @@ class Homepage extends Component{
         if (response.hasOwnProperty("posts")){
             // console.log(response);
             this.setState({posts: response.posts});
-            console.log("this is in get posts not ordered")
-            console.log(this.state.posts)
-            var current_posts = this.state.posts; 
-            current_posts.sort(function(a, b){return (new Date(a.publicationDate) - new Date(b.publicationDate))});
-            console.log('this is state after one way ')
-            console.log(current_posts)
-            this.setState({posts: current_posts}); 
-            current_posts.sort(function(a, b){return (new Date(b.publicationDate) - new Date(a.publicationDate))});
-            console.log('another way ')
-            console.log(current_posts)
-            // this.state.posts = 
-            this.setState({posts: current_posts}); 
+            this.state.posts.sort(function(b, a){return (new Date(a.publicationDate) - new Date(b.publicationDate))});
+            this.setState({})
         }
         else{
             this.setState({posts: []})
