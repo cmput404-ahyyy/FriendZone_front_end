@@ -63,8 +63,8 @@ class Profile extends Component{
             this.setState({success:true})
         }
         else{
-            this.setState({success:false,message:response.message})
-            alert("all fields mus be filled")
+            this.setState({success:false,message:response.message});
+            alert(response.message);
         }
         this.getProfile();
         })
