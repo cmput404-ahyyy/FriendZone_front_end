@@ -67,11 +67,13 @@ class Notifications extends Component{
         console.log(user_data)
         if(follower.hostName !=this.state.author.hostName){
             console.log("here is the stuff in line 67")
-            console.log(follower.hostName)
+            console.log(host)
             console.log(this.state.author.hostName)
+
 
             user_data.remote=true;
             user_data.host=host;
+            console.log(user_data);
         }
 
         fetch(url_for_friendRequest, {
