@@ -121,6 +121,7 @@ class App extends Component {
           "username": document.getElementById("usernameText").value,
           "email":document.getElementById("emailText").value,
           "password":document.getElementById("userPassword").value,
+          "githubUrl":document.getElementById("github").value, 
       };
       console.log(data);
       fetch(register_url, {
@@ -175,6 +176,10 @@ class App extends Component {
                       <FormGroup>
                         <Label for="Text">Email</Label>
                         <Input name="text" id="emailText" placeholder="Enter your user email" />
+                      </FormGroup>
+                      <FormGroup>
+                        <Label for="userGithub">Github Name</Label>
+                        <Input name="text" id="github" placeholder="Enter your user email" />
                       </FormGroup>
                       <Button className='loginbuttons' onClick={()=> {this.setState({signup:false})}}>Go Back</Button>
                       <Button className='loginbuttons' onClick={()=> {this.tryregister();}}>Sign up</Button>

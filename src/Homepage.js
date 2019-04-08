@@ -7,6 +7,7 @@ import base64 from 'react-native-base64'
 var host_url = 'http://127.0.0.1:8000';
 host_url = 'https://project-cmput404.herokuapp.com';
 var post_url = host_url+'/api/author/posts/';
+var url_for_friends=host_url+'/api/authors/';
 var user_url = host_url+'/api/authors/';
 var getposts_url = host_url+'/api/author/posts/'; 
 var url_for_authorId=host_url+'/api/author/profile/';
@@ -34,7 +35,8 @@ class Homepage extends Component{
              collapse_search: false, 
              posts: [], 
              files: {},
-             organized_posts: null 
+             organized_posts: null,
+             authorsId: null, 
              };
         
         this.get_posts();
@@ -52,6 +54,7 @@ class Homepage extends Component{
       .then(res => res.json())
       .then(response => {
         console.log(response.author_id)
+        console.log('this is the author id')
         this.setState({
           authorsId:response.author_id
       });
@@ -59,9 +62,32 @@ class Homepage extends Component{
     
       })
       .catch(error => console.error('Error:', error));
+
     
     
       }
+
+      
+    
+    get_friends() { 
+        fetch(url_for_friends+this.state.authorsId+"/local_friends/", {
+            method: 'GET',
+            headers:{
+            'Content-Type': 'application/json',
+            'Authorization': 'token '+this.props.author_state.token,
+            }
+        })
+        .then(res => res.json())
+        .then(response => {
+            console.log('friends response')
+            console.log(response)
+            // requests=response;
+
+
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    
 
       search(){
         console.log("her eis the passwed username")
@@ -168,12 +194,48 @@ class Homepage extends Component{
     }
 
     send_post(){
+        console.log(document.getElementById("exampleCustomSelect").value)
+        if (document.getElementById("exampleCustomSelect").value === 'L') {
+            var selected_author = document.getElementById("private_author").value; 
+            fetch(url_for_friends+this.state.authorsId+"/local_friends/", {
+                method: 'GET',
+                headers:{
+                'Content-Type': 'application/json',
+                'Authorization': 'token '+this.props.author_state.token,
+                }
+            })
+            .then(res => res.json())
+            .then(response => {
+                console.log('friends response')
+                console.log(response.author)
+                console.log(response)
+                console.log("name of selected friend")
+                console.log(selected_author)
+                   
+                    // if (author === selected_author) {
+                    //     console.log("yes the selected author exists in the friends list")
+
+                    // }
+
+                    // else {
+                    //     console.log("user does not exist!!!")
+                    // }
+             
+                // requests=response;
+    
+    
+            })
+            .catch(error => console.error('Error:', error));
+            
+
+        }
         
         var data = {
             "permission": document.getElementById("exampleCustomSelect").value,
             "content": document.getElementById("contentText").value,
             "title": document.getElementById("titleText").value,
             "images":[],
+            "private_author": document.getElementById("private_author").value, 
             "contentType":document.getElementById("textType").value
         };
         
@@ -362,6 +424,8 @@ get_foreignposts() {
         this.setState(state => ({ collapse: !state.collapse_search }));
     }
 
+    
+
     render(){
         // console.log("this is the prop")
         // console.log(this.props.author_state.token)
@@ -405,15 +469,11 @@ get_foreignposts() {
                                 <option value="FH">Only friends on my host</option>
                                 <option value="P">Public</option>
                             </CustomInput>
-                            <CustomInput type="select" id="exampleCustomMutlipleSelect" name="customSelect" disabled>
-                                <option value="">Which auther can view?</option>
-                                <option>Author 1</option>
-                                <option>Author 2</option>
-                                <option>Author 3</option>
-                                <option>Author 4</option>
-                                <option>Author 5</option>
-                            </CustomInput>
                         </FormGroup>
+                        <FormGroup>
+                            <Input type="textarea" name="text" id="private_author" placeholder="Author Name [If you'd like to share post with another author privately" />
+                        </FormGroup>
+
                         <FormGroup>
                             <CustomInput type="select" id="textType" name="customSelect" onChange={this.typeOnChange}>
                                 <option value="">Type of Post?</option>
