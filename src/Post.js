@@ -67,14 +67,45 @@ class Post extends Component{
 
     postComment(){
         // console.log(document.getElementById("commentText").value);
-        var data = {
-            "comment": document.getElementById(this.state.data.postid).value,
-            "contentType": "text/plain",
-            "authorid": this.state.data.author.author_id,
-            "postid": this.state.data.postid,
-
-        };
-        fetch(host_url+'/api/posts/'+this.state.data.postid+'/comments/', {
+        var data;
+        var today = new Date();
+        if (this.state.data.origin.includes("conet")){
+            data = {
+            "query": "addComment",
+            "post": this.state.data.origin,
+            "comment": {
+                "author": {
+                    "id": this.state.data.author.id,
+                    "host": this.state.data.author.hostName,
+                    "displayName":this.state.data.author.username,
+                    "url": this.state.data.author.url,
+                },
+                "comment": document.getElementById(this.state.data.id).value,
+                "contentType": "text/plain",
+                "published": today.toISOString(),
+                "id": this.state.data.id,
+                }
+            }
+        } else{
+            data = {
+                "query": "addComment",
+                "post": this.state.data.origin+"/api/posts/"+this.state.data.postid+'/comments/',
+                "comment": {
+                    "author": {
+                        "id": this.state.data.author.author_id,
+                        "host": this.state.data.author.hostName,
+                        "displayName":this.state.data.author.username,
+                        "url": this.state.data.author.url,
+                    },
+                    "comment": document.getElementById(this.state.data.postid).value,
+                    "contentType": "text/plain",
+                    "published": today.toISOString(),
+                    "id": this.state.data.postid,
+                }
+            }
+        }
+        console.log(data);
+        fetch(host_url+"/api/posts/"+data.comment.id+'/comments/', {
             method: 'POST', // or 'PUT'
             body: JSON.stringify(data), // data can be `string` or {object}!
             headers:{
@@ -104,9 +135,9 @@ class Post extends Component{
             this.state.comments = this.props.value.comments;
         }
         
-        if (this.state.getComment){
+        if (this.state.getComment && !this.state.data.origin.includes("conet")){
             this.state.comments = [];
-            var url = "https://project-cmput404.herokuapp.com/api/posts/"+this.state.data.postid+"/comments/";
+            var url = this.state.data.origin+"/api/posts/"+this.state.data.postid+"/comments/";
             fetch(url, {
                 method: 'GET',
                 headers:{
@@ -159,12 +190,22 @@ class Post extends Component{
                         <CardText>{(new Date(this.state.data.publicationDate)).toTimeString()}</CardText>
                         <CardHeader tag="h4">Comment: </CardHeader>
                         <CommentList comments = {this.state.comments} />
-                        <InputGroup>
+                        {this.state.data.origin.includes("conet") &&
+                            <InputGroup>
+                            <Input type="textarea" name="text" id={this.state.data.id} placeholder="Leave a comment!" />
+                            <InputGroupAddon addonType="append">
+                            <Button onClick={this.postComment} color="secondary">Post!</Button>
+                            </InputGroupAddon>
+                            </InputGroup>
+                        }
+                        {!this.state.data.origin.includes("conet") &&
+                            <InputGroup>
                             <Input type="textarea" name="text" id={this.state.data.postid} placeholder="Leave a comment!" />
                             <InputGroupAddon addonType="append">
                             <Button onClick={this.postComment} color="secondary">Post!</Button>
                             </InputGroupAddon>
-                        </InputGroup>
+                            </InputGroup>
+                        }
                     </CardBody>
                 </Card>
             )
