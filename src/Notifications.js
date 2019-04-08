@@ -51,15 +51,22 @@ class Notifications extends Component{
     }
 
 
-    accept_request(follower){
+    accept_request(follower,host){
         document.getElementById("rej_button").disabled = true;
         document.getElementById("accept_button").disabled = true;
+
         var user_data = {
             "from_author": follower,
             "to_author": this.state.author.author_id,
             "accepted": true,
             "regected": false,
+            "remote": false,
+            "host": "",
           };
+        if(follower.hostName !=this.state.author.hostName){
+            user_data.remote=true;
+            user_data.host=host;
+        }
 
         fetch(url_for_friendRequest, {
             method: 'POST',
@@ -83,7 +90,7 @@ class Notifications extends Component{
 
 
 
-    reject_request(follower){
+    reject_request(follower,host){
 
         document.getElementById("rej_button").disabled = true;
         document.getElementById("accept_button").disabled = true;
@@ -93,7 +100,13 @@ class Notifications extends Component{
             "to_author": this.state.author.author_id,
             "accepted": false,
             "regected": true,
+            "remote": false,
+            "host": "",
           };
+        if(follower.hostName !=this.state.author.hostName){
+            user_data.remote=true;
+            user_data.host=host;
+        }
 
         fetch(url_for_friendRequest, {
             method: 'POST',
@@ -109,17 +122,12 @@ class Notifications extends Component{
             console.log(response)
         
 
-
         })
         .catch(error => console.error('Error:', error));
-
     }
 
-  
-
-
-
     render(){
+        console.log(this.state.author)
 
         var user_data = {
             "from_author": this.state.author.author_id,
@@ -151,10 +159,10 @@ class Notifications extends Component{
             <tr>
                 <th scope="row">{request.username}</th>
                 <td>   
-                <Button id="accept_button" onClick={()=> {this.accept_request(request.author_id)}}>Accept request</Button>
+                <Button id="accept_button" onClick={()=> {this.accept_request(request.author_id,request.hostName)}}>Accept request</Button>
                 </td>
                 <td>
-                <Button id="rej_button" onClick={()=> {this.reject_request(request.author_id)}}>Decline request</Button>
+                <Button id="rej_button" onClick={()=> {this.reject_request(request.author_id,request.hostName)}}>Decline request</Button>
                 </td>
             </tr>
         
