@@ -112,7 +112,7 @@ class App extends Component {
         'Authorization': 'token '+this.state.token,
       }
     });
-    this.setState({login:false, signup:false,username:'null'});
+    this.setState({login:false, signup:false,username:'null', activeTab: '1'});
   }
 
   tryregister(){

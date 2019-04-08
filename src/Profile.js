@@ -64,7 +64,7 @@ class Profile extends Component{
         }
         else{
             this.setState({success:false,message:response.message})
-            document.getElementById('alert').value=response.message
+            alert("all fields mus be filled")
         }
         this.getProfile();
         })
