@@ -14,7 +14,7 @@ import Logo from './logoback.png';
 
 
 var host_url = 'http://localhost:8000'
-var host_url = 'https://project-cmput404.herokuapp.com';
+// var host_url = 'https://project-cmput404.herokuapp.com';
 var login_url = host_url+'/api/auth/login';
 var logout_url = host_url+'/api/auth/logout';
 var register_url = host_url+'/api/auth/register';
@@ -116,7 +116,7 @@ class App extends Component {
   tryregister(){
 
       // console.log(document.getElementById("usernameText").value);
-
+      console.log(document.getElementById("github").value)
       var data = {
           "username": document.getElementById("usernameText").value,
           "email":document.getElementById("emailText").value,
