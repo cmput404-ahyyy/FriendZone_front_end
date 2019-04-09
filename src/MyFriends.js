@@ -90,6 +90,7 @@ class MyFriends extends Component{
         document.body.style = 'background: #bdc3c7;'
         console.log("hers is the toek in myfrinds");
         console.log(this.state.author)
+        console.log(this.props)
         
 
         if(this.props.author_state.token!=null){
