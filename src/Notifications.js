@@ -56,7 +56,7 @@ class Notifications extends Component{
         document.getElementById("accept_button").disabled = true;
 
         var user_data = {
-            "from_author": follower,
+            "from_author": follower.author_id,
             "to_author": this.state.author.author_id,
             "accepted": true,
             "regected": false,
@@ -74,6 +74,7 @@ class Notifications extends Component{
             user_data.remote=true;
             user_data.host=host;
             user_data.to_author=this.state.author;
+            user_data.from_author=follower.url;
             console.log(user_data);
         }
 
@@ -105,7 +106,7 @@ class Notifications extends Component{
         document.getElementById("accept_button").disabled = true;
 
         var user_data = {
-            "from_author": follower,
+            "from_author": follower.author_id,
             "to_author": this.state.author.author_id,
             "accepted": false,
             "regected": true,
@@ -116,6 +117,7 @@ class Notifications extends Component{
             user_data.remote=true;
             user_data.host=host;
             user_data.to_author=this.state.author;
+            user_data.from_author=follower.url;
         }
 
         fetch(url_for_friendRequest, {
@@ -169,10 +171,10 @@ class Notifications extends Component{
             <tr>
                 <th scope="row">{request.username}</th>
                 <td>   
-                <Button id="accept_button" onClick={()=> {this.accept_request(request.author_id,request.hostName)}}>Accept request</Button>
+                <Button id="accept_button" onClick={()=> {this.accept_request(request,request.hostName)}}>Accept request</Button>
                 </td>
                 <td>
-                <Button id="rej_button" onClick={()=> {this.reject_request(request.author_id,request.hostName)}}>Decline request</Button>
+                <Button id="rej_button" onClick={()=> {this.reject_request(request,request.hostName)}}>Decline request</Button>
                 </td>
             </tr>
         
