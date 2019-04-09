@@ -19,6 +19,7 @@ class Profile extends Component{
     componentDidMount(){
         console.log(this.props.author_state.token)
         this.getProfile()
+  
 
         
     }
@@ -76,6 +77,7 @@ class Profile extends Component{
     
 
     render(){
+        document.body.style = 'background: #bdc3c7;'
         console.log(this.state.author)
         if(this.state.author){
             document.getElementById("firstName").value=this.state.author.firstName

@@ -30,6 +30,7 @@ class Notifications extends Component{
     
 
     componentDidMount(){
+        
         console.log("entered the didmount in notifications");
         fetch(url_follow, {
             method: 'GET',
@@ -137,6 +138,7 @@ class Notifications extends Component{
     }
 
     render(){
+        document.body.style = 'background: #bdc3c7;'
         console.log(this.state.author)
 
         var user_data = {
