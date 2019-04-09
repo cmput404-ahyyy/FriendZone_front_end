@@ -87,6 +87,7 @@ class MyFriends extends Component{
 
 
     render(){
+        document.body.style = 'background: #bdc3c7;'
         console.log("hers is the toek in myfrinds");
         
 

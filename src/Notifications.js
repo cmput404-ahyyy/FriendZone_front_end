@@ -30,6 +30,7 @@ class Notifications extends Component{
     
 
     componentDidMount(){
+        
         console.log("entered the didmount in notifications");
         fetch(url_follow, {
             method: 'GET',

@@ -40,6 +40,7 @@ class MyPosts extends Component{
     
 
     componentDidMount(){
+  
         console.log("entered the didmount in notifications");
         fetch(url_follow, {
             method: 'GET',
@@ -189,6 +190,7 @@ class MyPosts extends Component{
 
 
     render(){
+        document.body.style = 'background: #bdc3c7;'
         console.log("asdfefafasdfase")
         console.log(this.state.author.author_id)
         console.log(this.props.author_state.token)
