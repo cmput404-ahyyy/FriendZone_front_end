@@ -45,7 +45,7 @@ class MyFriends extends Component{
             author:response
         });
 
-
+        console.log(response)
         })
         .catch(error => console.error('Error:', error));
 
@@ -89,6 +89,7 @@ class MyFriends extends Component{
     render(){
         document.body.style = 'background: #bdc3c7;'
         console.log("hers is the toek in myfrinds");
+        console.log(this.state.author)
         
 
         if(this.props.author_state.token!=null){
