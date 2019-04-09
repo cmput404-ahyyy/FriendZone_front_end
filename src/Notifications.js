@@ -51,32 +51,16 @@ class Notifications extends Component{
     }
 
 
-    accept_request(follower,host){
+    accept_request(follower){
         document.getElementById("rej_button").disabled = true;
         document.getElementById("accept_button").disabled = true;
-
+        
         var user_data = {
-            "from_author": follower.author_id,
+            "from_author": follower,
             "to_author": this.state.author.author_id,
             "accepted": true,
             "regected": false,
-            "remote": false,
-            "host": "",
           };
-        console.log("here is the user_data")
-        console.log(user_data)
-        if(host !=this.state.author.hostName){
-            console.log("here is the stuff in line 67")
-            console.log(host)
-            console.log(this.state.author.hostName)
-
-
-            user_data.remote=true;
-            user_data.host=host;
-            user_data.to_author=this.state.author;
-            user_data.from_author=follower.url;
-            console.log(user_data);
-        }
 
         fetch(url_for_friendRequest, {
             method: 'POST',
@@ -100,25 +84,17 @@ class Notifications extends Component{
 
 
 
-    reject_request(follower,host){
+    reject_request(follower){
 
         document.getElementById("rej_button").disabled = true;
         document.getElementById("accept_button").disabled = true;
 
         var user_data = {
-            "from_author": follower.author_id,
+            "from_author": follower,
             "to_author": this.state.author.author_id,
             "accepted": false,
             "regected": true,
-            "remote": false,
-            "host": "",
           };
-        if(follower.hostName !=this.state.author.hostName){
-            user_data.remote=true;
-            user_data.host=host;
-            user_data.to_author=this.state.author;
-            user_data.from_author=follower.url;
-        }
 
         fetch(url_for_friendRequest, {
             method: 'POST',
@@ -134,12 +110,17 @@ class Notifications extends Component{
             console.log(response)
         
 
+
         })
         .catch(error => console.error('Error:', error));
+
     }
 
+  
+
+
+
     render(){
-        console.log(this.state.author)
 
         var user_data = {
             "from_author": this.state.author.author_id,
@@ -171,10 +152,10 @@ class Notifications extends Component{
             <tr>
                 <th scope="row">{request.username}</th>
                 <td>   
-                <Button id="accept_button" onClick={()=> {this.accept_request(request,request.hostName)}}>Accept request</Button>
+                <Button id="accept_button" onClick={()=> {this.accept_request(request.author_id)}}>Accept request</Button>
                 </td>
                 <td>
-                <Button id="rej_button" onClick={()=> {this.reject_request(request,request.hostName)}}>Decline request</Button>
+                <Button id="rej_button" onClick={()=> {this.reject_request(request.author_id)}}>Decline request</Button>
                 </td>
             </tr>
         
