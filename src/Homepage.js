@@ -28,11 +28,12 @@ class Homepage extends Component{
         this.get_events = this.getGithubEvent.bind(this);
         this.getFiles = this.getFiles.bind(this);
         this.get_foreignposts = this.get_foreignposts.bind(this);
+        this.typeOnChange = this.typeOnChange.bind(this);
         this.state = {
              collapse: false, 
              collapse_search: false, 
              posts: [], 
-             files: [],
+             files: {},
              organized_posts: null 
              };
         
@@ -158,6 +159,7 @@ class Homepage extends Component{
 
 
     getFiles(files){
+        console.log(files);
         this.setState({ files: files })
     }
 
@@ -175,9 +177,10 @@ class Homepage extends Component{
             "contentType":document.getElementById("textType").value
         };
         
-        if (this.state.files){
-            console.log(this.state.files)
-            data['images']=this.state.files
+        if (document.getElementById("textType").value === "application/base64" || document.getElementById("textType").value === "image/png;base64" || document.getElementById("textType").value === "image/jpeg;base64"){
+            document.getElementById("contentText").value = 'image';
+            document.getElementById("contentText").disabled = true;
+            data.content = this.state.files.base64;
         }
         // console.log(data);
         // console.log("this is the token " + this.props.author_state.token);
@@ -206,18 +209,16 @@ class Homepage extends Component{
     }
 
     do_all() { 
-        if (this.githubURL != 'null') {
-            this.getGithubEvent()
-        }
         this.get_posts()
-        this.get_foreignposts()
+        this.getGithubEvent()
+        // this.get_foreignposts()
         
     }
 
-    get_posts() {
+    async get_posts() {
         // console.log("in get posts " + this.props.author_state.token); 
     
-        fetch(getposts_url, {
+        await fetch(getposts_url, {
             method: 'GET',
             headers:{
               'Content-Type': 'application/json',
@@ -228,9 +229,10 @@ class Homepage extends Component{
         .then(response => {
         console.log(response);
         if (response.hasOwnProperty("posts")){
-            // console.log(response);
+            console.log(response);
             this.setState({posts: response.posts});
-            // this.state.posts = 
+            this.state.posts.sort(function(b, a){return (new Date(a.publicationDate) - new Date(b.publicationDate))});
+            this.setState({})
         }
         else{
             this.setState({posts: []})
@@ -238,19 +240,21 @@ class Homepage extends Component{
     
         })
         .catch(error => console.error('Error:', error));
+
+        var a = 1;
     }
 
 
 get_foreignposts() {
     // console.log("in get posts " + this.props.author_state.token); 
-    console.log('Basic ' + base64.encode('yonael_team' + ':' + 'EBXxU&qyW$687cMb%mmB'))
-    fetch("https://cmput404-front-test.herokuapp.com/api/posts", {
+    // console.log('Basic ' + base64.encode('yonael_team' + ':' + 'EBXxU&qyW$687cMb%mmB'))
+    fetch("https://project-cmput404.herokuapp.com/api/remote/author/posts/", {
             method: 'GET',
             headers:{
                 'Content-Type': 'application/json',
                 // 'Origin': 'https://cmput404-front-test.herokuapp.com',
                 // 'X-Request-User-ID': 'https://project-cmput404.herokuapp.com/author/e360bb9d-b63c-4c1b-8648-6019e61fe04f',
-                'Authorization': 'Basic ' + base64.encode('yonael_team' + ':' + 'EBXxU&qyW$687cMb%mmB'),
+                // 'Authorization': 'Basic ' + base64.encode('yonael_team' + ':' + 'EBXxU&qyW$687cMb%mmB'),
             }
     })
     .then(res => res.json())
@@ -258,7 +262,7 @@ get_foreignposts() {
         console.log('this is the response')
         console.log(response);
             for (var i = 0; i< response.posts.length; i++){
-                this.state.posts.push([response.posts[i]]);
+                this.state.posts.push(response.posts[i]);
             }
             this.setState({});
             // console.log(this.state.comments);
@@ -267,7 +271,15 @@ get_foreignposts() {
     
 }
 
-    
+    typeOnChange(){
+        if (document.getElementById("textType").value === "application/base64" || document.getElementById("textType").value === "image/png;base64" || document.getElementById("textType").value === "image/jpeg;base64"){
+            document.getElementById("contentText").value = 'image';
+            document.getElementById("contentText").disabled = true;
+        } else{
+            document.getElementById("contentText").disabled = false;
+        }
+    }    
+
     async getGithubEvent(){
         var githubUsername = 'github';
         // get user profile
@@ -289,7 +301,9 @@ get_foreignposts() {
         })
         .catch(error => console.error('Error:', error));
         
-
+        if (githubUsername === ""){
+            alert("Your Github url has not beet set up!");
+        }
         fetch('https://api.github.com/users/'+githubUsername+'/events', {
         method: 'GET', // or 'PUT'
         headers:{
@@ -300,7 +314,7 @@ get_foreignposts() {
         .then(response => {
         console.log(response);
         for (var i = 0; i< 10; i++){
-            this.state.posts.push([{
+            this.state.posts.push({
                 "postid": "",
                 "publicationDate": response[i].created_at,
                 "title": "Github Event",
@@ -321,9 +335,9 @@ get_foreignposts() {
                 "categories": [],
                 "unlisted": false,
                 "visibleTo": []
-            }]) 
+            }) 
         };
-        this.state.posts.sort(function(a, b){return (new Date(b[0].publicationDate) - new Date(a[0].publicationDate))});
+        
         this.setState({});
         })
       . catch(error => console.error('Error:', error));
@@ -344,35 +358,38 @@ get_foreignposts() {
         // console.log("this is the prop")
         // console.log(this.props.author_state.token)
         // console.log(this.state.posts)
+        this.state.posts.sort(function(b, a){return (new Date(a.publicationDate) - new Date(b.publicationDate))});
+
         if(this.state.posts.length > 0){
         var posts= this.state.posts.map(post =>{
             return(
                 <Col sm="6">
                     <div className = 'cardstyle'>
-                    <Post id='cardstyle' author_state={this.props.author_state} value={post[0]}/>
+                    <Post id='cardstyle' author_state={this.props.author_state} value={post}/>
                     </div>
                     {/* <Post id='cardstyle' author_state={this.props.author_state} value={post}/> */}
                 </Col>
             )})
         }
         else{
-            document.body.style = 'background: linear-gradient(#bdc3c7, #2c3e50);'
+            // document.body.style = 'background: linear-gradient(#bdc3c7, #2c3e50);'
             var posts="NO POSTS";
         }
         return(
             <center>
-                <Button id='post' size='sm' color="primary" onClick={this.toggle} style={{ marginBottom: '1rem' }}>Make Post!</Button>
+                <Button id='post' size='sm' color="primary" onClick={this.toggle} style={{ marginBottom: '1rem', zIndex:2 }}>Make Post!</Button>
                
                 
                 <Col sm="9">
                     <Collapse isOpen={this.state.collapse}>
+                    <div style={{paddingTop:20}}></div>
                     <Form className="postForm">
                         <FormGroup>
                             <Label for="exampleCustomFileBrowser">File Browser</Label>
-                            <FileBase64 multiple={ true } onDone={ this.getFiles.bind(this)} />
+                            <FileBase64 multiple={ false } onDone={ this.getFiles.bind(this)} />
                         </FormGroup>
                         <FormGroup>
-                            <CustomInput type="select" id="exampleCustomSelect" name="customSelect">
+                            <CustomInput type="select" id="exampleCustomSelect" name="customSelect" >
                                 <option value="">Who can view?</option>
                                 <option value="M">Me only</option>
                                 <option value="L">Another author</option>
@@ -391,7 +408,7 @@ get_foreignposts() {
                             </CustomInput>
                         </FormGroup>
                         <FormGroup>
-                            <CustomInput type="select" id="textType" name="customSelect">
+                            <CustomInput type="select" id="textType" name="customSelect" onChange={this.typeOnChange}>
                                 <option value="">Type of Post?</option>
                                 <option value="text/plain">Simple Plain Text</option>
                                 <option value="text/markdown">Markdown</option>
@@ -413,40 +430,12 @@ get_foreignposts() {
                         </FormGroup>
                     </Form>                    
                     </Collapse>
-                    
                 </Col>
-
-                
-                
-                <div classname = 'showContent'>
-                    <Col sm="9">
-                        <FormGroup style={{width:"300px"}} >
-                            <Label for="exampleSearch" >Search</Label>
-                            <Input
-                            type="search"
-                            name="search_for_author"
-                            id="search_for_author"
-                            placeholder="Search for Author"
-
-                            />
-                            {/* <Button onClick={()=> {this.search()}} color="secondary" size="lg">search</Button> */}
-                        </FormGroup>
-                        </Col>
-                </div>
-                
-                    
-                        
-                    
-                    
-
-                    <div classname = 'logo'>
-                        {/* <img src={require('./logoback.png')} width='30%' height="20%" alt="cam"/>    */}
-                    </div>
 
                     <div classname = 'buttons'>
                         <Button id='get_posts' size='sm' color="primary" onClick={this.get_posts} style={{ marginBottom: '1rem' }}>Get Posts</Button>
                         <Button id='get_stream' size='sm' color="primary" onClick={this.get_events} style={{ marginBottom: '1rem' }}>Get Git Events</Button>
-                        <Button id='get_stream' size='sm' color="primary" onClick={this.get_foreignposts} style={{ marginBottom: '1rem' }}>Get Foreign Posts</Button> 
+                        {/* <Button id='get_stream' size='sm' color="primary" onClick={this.get_foreignposts} style={{ marginBottom: '1rem' }}>Get Foreign Posts</Button>  */}
                     </div>
                     
                     

@@ -1,15 +1,21 @@
 import React, { Component } from 'react';
-import { CardImg, CardSubtitle, CustomInput, InputGroup, InputGroupAddon, Input, Form, FormGroup, CardHeader, Card, CardBody, Button, CardTitle, CardText, Row, Col } from 'reactstrap';
+import { CardImg, CardSubtitle, Collapse, InputGroup, InputGroupAddon, Input, Form, FormGroup, CardHeader, Card, CardBody, Button, CardTitle, CardText, Row, Col } from 'reactstrap';
 import Markdown from 'markdown-to-jsx';
 
 var host_url = 'https://project-cmput404.herokuapp.com';
+//host_url = 'http://127.0.0.1:8000';
 
 function CommentList(props){
     const comments = props.comments;
     const commentItems = comments.map(
         (comment) =>
         <li className="comment" >
-            <p>{"Author: "+comment.author}</p>
+            {comment.author.displayName == undefined &&
+                <p>{"Author: "+comment.author}</p>
+            }
+            {comment.author.displayName != undefined &&
+                <p>{"Author: "+comment.author.displayName}</p>
+            }
             <p>{"Comment: "+ comment.comment}</p>
         </li>
     );
@@ -22,6 +28,7 @@ class Post extends Component{
     constructor(props) {
         super(props);
         this.postComment = this.postComment.bind(this);
+        this.toggle = this.toggle.bind(this);
         this.state = {
             data:{
                 "postid": "",
@@ -31,16 +38,16 @@ class Post extends Component{
                 "origin": "",
                 "contentType": "",
                 "author": {
-                  "url": "",
-                  "author_id": "",
-                  "firstName": null,
-                  "lastName": "",
-                  "userName": "",
-                  "hostName": "",
-                  "githubUrl": ""
+                    "url": "",
+                    "author_id": "",
+                    "firstName": null,
+                    "lastName": "",
+                    "username": "",
+                    "hostName": "",
+                    "githubUrl": ""
                 },
                 "content": "content",
-                "images":[],
+                "images":[{'img': ''}],
                 "permission": "",
                 "categories": [],
                 "comments": [],
@@ -53,16 +60,52 @@ class Post extends Component{
         };
     }
     
+    toggle() {
+        this.setState(state => ({ collapse: !state.collapse }));
+    }
+    
+
     postComment(){
         // console.log(document.getElementById("commentText").value);
-        var data = {
-            "comment": document.getElementById(this.state.data.postid).value,
-            "contentType": "text/plain",
-            "authorid": this.state.data.author.author_id,
-            "postid": this.state.data.postid,
-
-        };
-        fetch(host_url+'/api/posts/'+this.state.data.postid+'/comments/', {
+        var data;
+        var today = new Date();
+        if (this.state.data.origin.includes("conet")){
+            data = {
+            "query": "addComment",
+            "post": this.state.data.origin,
+            "comment": {
+                "author": {
+                    "id": this.state.data.author.id,
+                    "host": this.state.data.author.hostName,
+                    "displayName":this.state.data.author.username,
+                    "url": this.state.data.author.url,
+                },
+                "comment": document.getElementById(this.state.data.id).value,
+                "contentType": "text/plain",
+                "published": today.toISOString(),
+                "id": this.state.data.id,
+                }
+            }
+        } else{
+            data = {
+                "query": "addComment",
+                "post": this.state.data.origin+"/api/posts/"+this.state.data.postid+'/comments/',
+                "comment": {
+                    "author": {
+                        "id": this.state.data.author.author_id,
+                        "host": this.state.data.author.hostName,
+                        "displayName":this.state.data.author.username,
+                        "url": this.state.data.author.url,
+                    },
+                    "comment": document.getElementById(this.state.data.postid).value,
+                    "contentType": "text/plain",
+                    "published": today.toISOString(),
+                    "id": this.state.data.postid,
+                }
+            }
+        }
+        console.log(data);
+        fetch(host_url+"/api/posts/"+data.comment.id+'/comments/', {
             method: 'POST', // or 'PUT'
             body: JSON.stringify(data), // data can be `string` or {object}!
             headers:{
@@ -87,14 +130,14 @@ class Post extends Component{
         // this.setState({data: this.props.value});
         this.state.data = this.props.value;
         this.state.author_state = this.props.author_state;
-        // console.log(this.state.data)
+        // console.log(this.props);
         if (this.state.useOldComments){
             this.state.comments = this.props.value.comments;
         }
         
-        if (this.state.getComment){
+        if (this.state.getComment && !this.state.data.origin.includes("conet")){
             this.state.comments = [];
-            var url = "https://project-cmput404.herokuapp.com/api/posts/"+this.state.data.postid+"/comments/";
+            var url = this.state.data.origin+"/api/posts/"+this.state.data.postid+"/comments/";
             fetch(url, {
                 method: 'GET',
                 headers:{
@@ -112,25 +155,57 @@ class Post extends Component{
             .catch(error => console.error('Error:', error));
         }
         if (this.state.data.title !== "Github Event"){
+            var content = (<Markdown>{this.state.data.content}</Markdown>);
+            if (this.state.data.contentType == "application/base64" || this.state.data.contentType == "image/png;base64" || this.state.data.contentType == "image/jpeg;base64"){
+                var image = (
+                    <div>
+                        <Button color="secondary" onClick={this.toggle} size="sm" block>⇩ ⇩ ⇩ Click to show picture ⇩ ⇩ ⇩</Button>
+                        <Collapse isOpen={this.state.collapse}>
+                            <CardImg top width="100%" src={this.state.data.content} alt="Card image cap" />
+                        </Collapse>
+                    </div>
+                );
+                var content = (<div></div>);
+            }
+            if (this.state.data.author.hasOwnProperty('displayName')){
+                this.state.data.author.username = this.state.data.author.displayName;
+            }
+            if (this.state.data.hasOwnProperty('published')){
+                this.state.data.publicationDate = this.state.data.published
+            }
             return (
                 <Card>
-                    {/* <CardImg top width="100%" src="https://placeholdit.imgix.net/~text?txtsize=33&txt=318%C3%97180&w=318&h=180" alt="Card image cap" /> */}
+                    
+                    {image}
+                    
                     <CardHeader tag="h3">{this.state.data.title}</CardHeader>
                     <CardBody>
-                        <CardText>{"Author: "+this.state.data.author.userName}</CardText> 
+                        <CardText>{"Author: "+this.state.data.author.username}</CardText> 
                         <hr></hr>
-                        <CardText>{this.state.data.origin}</CardText>
+                        <CardText>{"Origin: "+this.state.data.origin}</CardText>
                         <hr></hr>
-                        <Markdown>{this.state.data.content}</Markdown>
+                        {content}
+                        <hr></hr>
                         <CardText>{(new Date(this.state.data.publicationDate)).toDateString()}</CardText>
                         <CardText>{(new Date(this.state.data.publicationDate)).toTimeString()}</CardText>
+                        <CardHeader tag="h4">Comment: </CardHeader>
                         <CommentList comments = {this.state.comments} />
-                        <InputGroup>
+                        {this.state.data.origin.includes("conet") &&
+                            <InputGroup>
+                            <Input type="textarea" name="text" id={this.state.data.id} placeholder="Leave a comment!" />
+                            <InputGroupAddon addonType="append">
+                            <Button onClick={this.postComment} color="secondary">Post!</Button>
+                            </InputGroupAddon>
+                            </InputGroup>
+                        }
+                        {!this.state.data.origin.includes("conet") &&
+                            <InputGroup>
                             <Input type="textarea" name="text" id={this.state.data.postid} placeholder="Leave a comment!" />
                             <InputGroupAddon addonType="append">
                             <Button onClick={this.postComment} color="secondary">Post!</Button>
                             </InputGroupAddon>
-                        </InputGroup>
+                            </InputGroup>
+                        }
                     </CardBody>
                 </Card>
             )
